@@ -19,11 +19,20 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install SDK packages
+        run: |
+          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
+          yes | sdkmanager --licenses
+
       - name: Install Cordova
         run: npm install -g cordova
 
       - name: Create App Structure
         run: |
+          mkdir -p /home/runner/work/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/} 2>/dev/null || true
           cordova create my_tv_app com.alfernado.tvtime "TVTime"
           cd my_tv_app
           cordova platform add android
