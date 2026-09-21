@@ -1,1 +1,31 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.alfernado.tvtime" version="1.0.0"
+    xmlns="http://www.w3.org/ns/widgets"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:cdv="http://apache.org">
 
+    <name>TVTime</name>
+    <description>TVTime for Google TV</description>
+    <author email="alfernado@outlook.com">You</author>
+    <content src="index.html" />
+
+    <preference name="ScrollEnabled" value="false" />
+
+    <platform name="android">
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission
+                android:name="android.permission.PACKAGE_USAGE_STATS"
+                tools:ignore="ProtectedPermissions"
+                xmlns:tools="http://schemas.android.com/tools" />
+            <uses-feature android:name="android.software.leanback" android:required="false" />
+            <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/manifest/application/activity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+            </intent-filter>
+        </config-file>
+    </platform>
+</widget>
