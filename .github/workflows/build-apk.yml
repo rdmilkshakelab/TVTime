@@ -1,1 +1,44 @@
+name: Build Android TV APK
 
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Install Cordova
+        run: npm install -g cordova
+
+      - name: Create App Structure
+        run: |
+          cordova create my_tv_app com.alfernado.tvtime "TVTime"
+          cd my_tv_app
+          cordova platform add android
+          cordova plugin add ../cordova-plugin-tvtime-usage
+          rm -rf www/*
+          cp ../index.html www/
+          cp ../config.xml .
+
+      - name: Compile APK
+        run: |
+          cd my_tv_app
+          cordova build android --debug -- --packageType=apk
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: TVTime-APK
+          path: my_tv_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
