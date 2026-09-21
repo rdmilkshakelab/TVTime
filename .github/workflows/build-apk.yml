@@ -2,7 +2,9 @@ name: Build Android TV APK
 
 on:
   push:
-    branches: [ main, master ]
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -16,33 +18,32 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: '17'
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install SDK packages
-        run: |
-          sdkmanager --install "platform-tools" "platforms;android-34" "build-tools;34.0.0"
-          yes | sdkmanager --licenses
+          distribution: zulu
+          java-version: "17"
 
       - name: Install Cordova
-        run: npm install -g cordova
+        run: npm install --global cordova
 
       - name: Create App Structure
+        shell: bash
         run: |
-          mkdir -p /home/runner/work/${GITHUB_REPOSITORY#*/}/${GITHUB_REPOSITORY#*/} 2>/dev/null || true
+          set -euxo pipefail
+
           cordova create my_tv_app com.alfernado.tvtime "TVTime"
+
           cd my_tv_app
           cordova platform add android
           cordova plugin add ../cordova-plugin-tvtime-usage
+
           rm -rf www/*
           cp ../index.html www/
           cp ../config.xml .
 
       - name: Compile APK
+        shell: bash
         run: |
+          set -euxo pipefail
+
           cd my_tv_app
           cordova build android --debug -- --packageType=apk
 
@@ -51,3 +52,4 @@ jobs:
         with:
           name: TVTime-APK
           path: my_tv_app/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
